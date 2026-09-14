@@ -25,22 +25,26 @@ export function setToken(value: string | null): void {
   token = value;
 }
 
+/** Los verbos que usa la API: leer, crear, modificar y eliminar. */
+type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+
 /**
  * Hace una petición a la API y devuelve el JSON ya tipado.
  *
  * - Sin `body` -> GET. Con `body` -> POST enviándolo como JSON.
+ * - `method` cambia ese comportamiento: PATCH para modificar, DELETE para borrar.
  * - Si hay sesión activa, adjunta la cabecera `Authorization: Bearer <token>`.
  * - Si el servidor responde con error, lanza un Error con SU mensaje, que es
  *   el que la pantalla muestra al usuario.
  *
  * @param path Ruta relativa a la API, empezando por "/". Ej: "/auth/login".
  */
-export async function request<T>(path: string, body?: unknown): Promise<T> {
+export async function request<T>(path: string, body?: unknown, method?: Method): Promise<T> {
   let response: Response;
 
   try {
     response = await fetch(`${API_URL}${path}`, {
-      method: body === undefined ? 'GET' : 'POST',
+      method: method ?? (body === undefined ? 'GET' : 'POST'),
       headers: {
         'Content-Type': 'application/json',
         // Sintaxis de "propagación condicional": si no hay token, no se añade
@@ -55,8 +59,9 @@ export async function request<T>(path: string, body?: unknown): Promise<T> {
     throw new Error(`No se pudo conectar con ${API_URL}. ¿Está encendido el servidor?`);
   }
 
-  // El backend responde JSON siempre, pero una caída puede devolver HTML: si no
-  // se puede leer como JSON, se sigue con un objeto vacío en vez de reventar.
+  // El backend responde JSON siempre, pero una caída puede devolver HTML —y un
+  // DELETE exitoso responde 204 sin cuerpo—: si no se puede leer como JSON, se
+  // sigue con un objeto vacío en vez de reventar.
   const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
 
   if (!response.ok) {

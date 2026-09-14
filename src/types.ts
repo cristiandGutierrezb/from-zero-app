@@ -38,26 +38,28 @@ export const STATUSES = [
 export type TicketStatus = (typeof STATUSES)[number];
 
 /**
- * Catálogo de categorías (F03 del documento de visión): la categoría es la que
- * determina el SLA y el grupo de agentes competentes.
+ * Categoría del catálogo (F03/F04): determina el SLA y el grupo de agentes
+ * competentes.
  *
- * Está quemado aquí porque el backend todavía no expone el catálogo. Cuando
- * exista F04 ("catálogo configurable"), esta lista se pedirá al servidor.
+ * Ya NO es una lista quemada: el coordinador administra el catálogo en el
+ * servidor y la app lo pide con `listCategories()`. Por eso un ticket guarda
+ * `categoryId` y no el nombre de la categoría.
  */
-export const CATEGORIES = [
-  'RED',
-  'AULAS',
-  'CREDENCIALES',
-  'PLATAFORMA_ACADEMICA',
-  'OTRO',
-] as const;
-export type Category = (typeof CATEGORIES)[number];
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  /** Horas comprometidas de solución para los casos de esta categoría. */
+  slaHours: number;
+  /** Una categoría inactiva no admite casos nuevos, pero conserva los viejos. */
+  active: boolean;
+}
 
 /** Lo que el usuario llena en el formulario de una nueva solicitud. */
 export interface NewTicket {
   subject: string;
   description: string;
-  category: Category;
+  categoryId: string;
   priority: Priority;
 }
 
@@ -67,4 +69,24 @@ export interface Ticket extends NewTicket {
   status: TicketStatus;
   requesterId: string;
   agentId: string | null;
+  /** Fecha ISO tal como la manda el servidor. */
+  createdAt: string;
+}
+
+/** Lo que se puede cambiar de un ticket. El dueño y la fecha, nunca. */
+export type TicketChanges = Partial<
+  Pick<Ticket, 'subject' | 'description' | 'status' | 'priority' | 'categoryId'>
+>;
+
+/**
+ * Criterios de búsqueda (F11). Lo ausente no restringe.
+ *
+ * No hay filtro por solicitante: el servidor se lo impone solo a quien tiene
+ * rol SOLICITANTE, que únicamente ve sus propios casos.
+ */
+export interface TicketFilters {
+  status?: TicketStatus;
+  priority?: Priority;
+  categoryId?: string;
+  text?: string;
 }

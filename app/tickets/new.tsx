@@ -1,40 +1,56 @@
 /**
  * Registro de una solicitud de soporte (F01 del documento de visión).
  *
- * El solicitante describe el problema en lenguaje natural; categoría y
- * prioridad tienen un valor por defecto razonable para que registrar un caso
- * no tome más de un minuto.
+ * El solicitante describe el problema en lenguaje natural; la categoría sale
+ * del catálogo que administra el coordinador (F04) y es la que fija el
+ * compromiso de atención.
  */
 
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
+import { listCategories } from '../../src/api/categories';
 import { createTicket } from '../../src/api/tickets';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import Select from '../../src/components/Select';
-import { CATEGORIES, PRIORITIES, type NewTicket } from '../../src/types';
+import { PRIORITIES, type Category, type NewTicket } from '../../src/types';
 
-export default function NewTicket() {
+export default function NewTicketScreen() {
   // Identificador del ticket recién creado; mientras sea null se ve el formulario.
   const [createdId, setCreatedId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const { control, handleSubmit, setError, reset, formState } = useForm<NewTicket>({
+  const { control, handleSubmit, setError, setValue, reset, formState } = useForm<NewTicket>({
     defaultValues: {
       subject: '',
       description: '',
-      category: 'OTRO',
+      categoryId: '',
       // MEDIA por defecto: el solicitante no siempre sabe priorizar, y el
       // sistema puede escalar después según el SLA (F08).
       priority: 'MEDIA',
     },
   });
 
+  // El catálogo se pide una sola vez, al entrar. Si falla, el formulario se
+  // queda sin categorías y el mensaje explica por qué.
+  useEffect(() => {
+    listCategories()
+      .then((list) => {
+        setCategories(list);
+        // Preseleccionar la primera evita un envío rechazado por el servidor
+        // solo porque nadie tocó el selector.
+        if (list[0]) setValue('categoryId', list[0].id);
+      })
+      .catch((error: Error) => setError('root', { message: error.message }));
+  }, [setError, setValue]);
+
   const submit = async (data: NewTicket) => {
     try {
       const ticket = await createTicket(data);
       setCreatedId(ticket.id);
-      reset();
+      reset({ subject: '', description: '', categoryId: data.categoryId, priority: 'MEDIA' });
     } catch (error) {
       setError('root', { message: (error as Error).message });
     }
@@ -49,7 +65,8 @@ export default function NewTicket() {
           Tu caso quedó con el número{'\n'}
           <Text className="font-semibold text-neutral-900">{createdId}</Text>
         </Text>
-        <Button text="Reportar otra" onPress={() => setCreatedId(null)} />
+        <Button text="Ver el caso" onPress={() => router.replace(`/tickets/${createdId}`)} />
+        <Button text="Reportar otra" onPress={() => setCreatedId(null)} secondary />
       </View>
     );
   }
@@ -86,7 +103,13 @@ export default function NewTicket() {
         }}
       />
 
-      <Select control={control} name="category" label="Categoría" options={CATEGORIES} />
+      <Select
+        control={control}
+        name="categoryId"
+        label="Categoría"
+        options={categories.map((c) => ({ value: c.id, label: `${c.name} · ${c.slaHours}h` }))}
+        empty="No se pudo cargar el catálogo de categorías."
+      />
       <Select control={control} name="priority" label="Prioridad" options={PRIORITIES} />
 
       {!!formState.errors.root && (
@@ -98,7 +121,7 @@ export default function NewTicket() {
       <Button
         text={formState.isSubmitting ? 'Enviando…' : 'Enviar solicitud'}
         onPress={handleSubmit(submit)}
-        disabled={formState.isSubmitting}
+        disabled={formState.isSubmitting || categories.length === 0}
       />
     </ScrollView>
   );

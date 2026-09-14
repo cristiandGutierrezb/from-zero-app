@@ -37,6 +37,7 @@ export async function login(email: string, password: string) {
     correo: email,
     clave: password,
   });
+
   return { token: session.token, user: toUser(session.usuario) };
 }
 

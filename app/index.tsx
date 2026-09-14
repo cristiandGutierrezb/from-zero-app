@@ -20,6 +20,12 @@ export default function Home() {
 
       <View className="gap-3">
         <Button text="Reportar una solicitud" onPress={() => router.push('/tickets/new')} />
+        {/* Un solicitante ve solo sus casos; agentes y coordinación, todos (F10). */}
+        <Button
+          text={user?.role === 'SOLICITANTE' ? 'Mis solicitudes' : 'Bandeja de solicitudes'}
+          onPress={() => router.push('/tickets')}
+          secondary
+        />
         <Button text="Cerrar sesión" onPress={signOut} secondary />
       </View>
     </View>
