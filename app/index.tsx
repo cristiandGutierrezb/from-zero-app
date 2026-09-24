@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import Button from '../src/components/Button';
-import { useSession } from '../src/session/context';
+import { isCoordination, useSession } from '../src/modules/auth/session';
 
 /** Pantalla de inicio: quién eres y qué puedes hacer. */
 export default function Home() {
@@ -26,6 +26,14 @@ export default function Home() {
           onPress={() => router.push('/tickets')}
           secondary
         />
+        {/* La coordinación es la que define los compromisos de atención (F04). */}
+        {isCoordination(user) && (
+          <Button
+            text="Catálogo de categorías"
+            onPress={() => router.push('/categories')}
+            secondary
+          />
+        )}
         <Button text="Cerrar sesión" onPress={signOut} secondary />
       </View>
     </View>

@@ -17,7 +17,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { listCategories } from '../../src/api/categories';
+import { listCategories } from '../../src/modules/categories/api';
 import { searchTickets } from '../../src/api/tickets';
 import Badge from '../../src/components/Badge';
 import Button from '../../src/components/Button';

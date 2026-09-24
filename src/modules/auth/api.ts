@@ -3,8 +3,8 @@
  * español del servidor y el inglés de la app.
  */
 
-import type { Role, User } from '../types';
-import { request } from './client';
+import { request } from '../../api/client';
+import type { Role, User } from './types';
 
 /** Forma EXACTA en que el backend devuelve un usuario. No cambiar a la ligera. */
 interface UserResponse {

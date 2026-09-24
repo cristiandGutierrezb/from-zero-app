@@ -7,9 +7,9 @@
  */
 
 import { createContext, use, useState, type PropsWithChildren } from 'react';
-import * as api from '../api/auth';
-import { setToken } from '../api/client';
-import type { User } from '../types';
+import { setToken } from '../../api/client';
+import * as api from './api';
+import type { User } from './types';
 
 interface Session {
   /** null = nadie ha entrado. El layout raíz usa esto para decidir qué mostrar. */
@@ -20,6 +20,16 @@ interface Session {
 }
 
 const SessionContext = createContext<Session | null>(null);
+
+/**
+ * ¿La sesión manda sobre la configuración del sistema (F20)?
+ *
+ * Es solo para decidir qué se le ENSEÑA a cada quien. Quién puede de verdad lo
+ * decide el servidor, que responde 403 sin importar lo que crea la app: esto
+ * evita ofrecer un botón que iba a fallar, no sustituye el permiso.
+ */
+export const isCoordination = (user: User | null): boolean =>
+  user?.role === 'COORDINADOR' || user?.role === 'ADMINISTRADOR';
 
 /** Atajo para leer la sesión desde cualquier pantalla: `const { user } = useSession()`. */
 export function useSession(): Session {

@@ -10,12 +10,13 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
-import { listCategories } from '../../src/api/categories';
+import { listCategories } from '../../src/modules/categories/api';
 import { createTicket } from '../../src/api/tickets';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import Select from '../../src/components/Select';
-import { PRIORITIES, type Category, type NewTicket } from '../../src/types';
+import type { Category } from '../../src/modules/categories/types';
+import { PRIORITIES, type NewTicket } from '../../src/types';
 
 export default function NewTicketScreen() {
   // Identificador del ticket recién creado; mientras sea null se ve el formulario.

@@ -16,18 +16,23 @@ registro de solicitudes, F10 = consulta del estado, F11 = búsqueda y filtrado.
 
 ## El mapa
 
+La app se está mudando a **módulos**: cada característica con su vocabulario,
+su traducción y su pantalla juntos, en vez de repartidos por tipo de archivo.
+
 | Carpeta | Qué hay | Regla |
 |---|---|---|
 | `app/` | Una pantalla por archivo; el nombre **es** la ruta (`app/tickets/[id].tsx` → `/tickets/…`) | Solo interfaz y estado de pantalla |
-| `src/api/` | Un archivo por recurso del servidor | **El único lugar** que sabe de `fetch`, de URLs y del español del backend |
-| `src/types.ts` | El vocabulario de la app | En inglés; los **valores** (`SOLICITANTE`, `ALTA`) en español, porque son datos del servidor |
+| `src/modules/<x>/` | Un módulo: `types.ts` (su vocabulario) + `api.ts` (su traducción) | Un módulo no importa de otro; lo común baja a `src/api/` o `src/components/` |
+| `src/modules/auth/` | Roles, usuario, login/registro/perfil y el contexto de sesión | El token vive en memoria |
+| `src/modules/categories/` | El catálogo de categorías y SLA (F04) | |
+| `src/api/client.ts` | El transporte compartido: **el único lugar** que sabe de `fetch`, de URLs y del token | |
+| `src/api/tickets.ts`, `src/types.ts` | Los tickets, todavía sin mudar a `src/modules/tickets/` | Al tocarlos a fondo, múdalos |
 | `src/components/` | Piezas reutilizadas: `Field`, `Select`, `Button`, `Badge` | Sin lógica de negocio |
-| `src/session/` | Quién entró y las acciones que lo cambian | El token vive en memoria |
 
 ## Las cuatro reglas
 
-1. **El servidor habla español, la app inglés.** `nombre → name`, `asunto → subject`. Esa traducción ocurre **solo** en `src/api/`, en una función `toX()`. Si el servidor renombra un campo, cambia un archivo y nada más.
-2. **Las reglas del negocio son del servidor.** Qué transición de estado es válida (F06), quién puede borrar, qué categorías existen: el cliente **no** las reimplementa. Manda la petición y muestra el mensaje de error que vuelva. Duplicar la regla aquí garantiza que algún día las dos versiones difieran.
+1. **El servidor habla español, la app inglés.** `nombre → name`, `asunto → subject`. Esa traducción ocurre **solo** en el `api.ts` del módulo, en una función `toX()`. Si el servidor renombra un campo, cambia un archivo y nada más.
+2. **Las reglas del negocio son del servidor.** Qué transición de estado es válida (F06), quién puede borrar, qué categorías existen: el cliente **no** las reimplementa. Manda la petición y muestra el mensaje de error que vuelva. Duplicar la regla aquí garantiza que algún día las dos versiones difieran. Esconder un botón según el rol (`isCoordination`) no es reimplementar la regla: es no ofrecer algo que iba a fallar con 403.
 3. **Nada de credenciales ni datos personales en `console.log`.** Queda en la bitácora del dispositivo.
 4. **Rutas tipadas**: `app.json` tiene `typedRoutes: true`. Al agregar un archivo en `app/`, TypeScript falla con «not assignable to parameter of type…» hasta que `.expo/types/router.d.ts` se regenere. Se arregla **arrancando el servidor** (`npx expo start`), no editando ese archivo.
 
@@ -48,6 +53,11 @@ curl -s -o /dev/null -w '%{http_code}\n' \
 El backend tiene que estar arriba (`npm run dev` allá) y `EXPO_PUBLIC_API_URL`
 del `.env` tiene que apuntarle. Ojo con `localhost` desde un dispositivo real:
 ver `.env.example`.
+
+**Para entrar como coordinación** (catálogo de categorías): el registro de la
+app siempre crea un SOLICITANTE. Las cuentas con mando las siembra el backend
+con `npm run db:seed`; la de coordinación es `coordinacion@autonoma.edu.co` y
+su clave está en el `.env.example` de allá.
 
 ## Agregar una pantalla o consumir un endpoint nuevo
 

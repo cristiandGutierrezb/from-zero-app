@@ -1,6 +1,6 @@
 ---
 name: pantalla-movil
-description: Receta para consumir un endpoint nuevo del backend HelpDesk UAM desde la app Expo y construir su pantalla (tipos, traducción en src/api, pantalla en app/, navegación). Úsala cuando el backend expuso algo nuevo, cambió un campo, o hay que agregar una pantalla a la app móvil.
+description: Receta para consumir un endpoint nuevo del backend HelpDesk UAM desde la app Expo y construir su pantalla (módulo en src/modules con types y api, pantalla en app/, navegación). Úsala cuando el backend expuso algo nuevo, cambió un campo, o hay que agregar una pantalla a la app móvil.
 ---
 
 # Agregar una pantalla o un endpoint a la app móvil
@@ -9,8 +9,12 @@ De afuera hacia adentro es al revés de como se construye: primero el **tipo**,
 después la **traducción**, después la **pantalla**. Hacerlo al revés termina
 con nombres del servidor regados por toda la interfaz.
 
-Ejemplo vivo: los tickets (`src/types.ts` → `src/api/tickets.ts` →
-`app/tickets/`). Cópialo.
+Una característica = un **módulo**: `src/modules/<x>/types.ts` →
+`src/modules/<x>/api.ts` → `app/<x>/`. Ejemplo vivo y completo: el catálogo de
+categorías (`src/modules/categories/` → `app/categories/`). Cópialo.
+
+Los tickets todavía viven en `src/types.ts` + `src/api/tickets.ts`: es la parte
+sin mudar, no el modelo a seguir.
 
 ## 0. Mirar el contrato
 
@@ -19,7 +23,7 @@ Ejemplo vivo: los tickets (`src/types.ts` → `src/api/tickets.ts` →
 puede** llamar cada ruta y en **qué errores** devuelve: eso decide qué botones
 se muestran y qué mensajes salen.
 
-## 1. `src/types.ts`
+## 1. `src/modules/<x>/types.ts`
 
 El tipo en inglés, con los valores en español (son datos del servidor, no
 nombres de código). Para una entidad completa van tres cosas:
@@ -32,9 +36,10 @@ export type XChanges = Partial<Pick<X, 'campo' | 'otro'>>;   // lo modificable
 
 Y si hay búsqueda, un `XFilters` con todo opcional.
 
-## 2. `src/api/xs.ts`
+## 2. `src/modules/<x>/api.ts`
 
-El único archivo que sabe cómo se llaman los campos en el servidor:
+El único archivo que sabe cómo se llaman los campos en el servidor. Importa el
+transporte compartido: `import { request } from '../../api/client'`.
 
 ```ts
 interface XResponse { id: string; nombre: string; /* forma EXACTA del backend */ }
@@ -61,16 +66,20 @@ variable: se lee con `useLocalSearchParams<{ id: string }>()`).
 - **Listas**: `FlatList` + `useFocusEffect` para recargar al volver de otra pantalla, y `RefreshControl` para el gesto de arrastrar.
 - **Estado de carga**: `useState<X[] | null>(null)` — `null` significa «cargando» y muestra un `ActivityIndicator`.
 - **Confirmar algo destructivo**: dos toques sobre el mismo botón (`confirming`), no `Alert`, que no se comporta igual en web.
-- **Por rol**: `const { user } = useSession()` y esconder lo que el servidor va a rechazar de todas formas. Esconder no es autorizar: la decisión real es del servidor.
+- **Por rol**: `const { user } = useSession()` y esconder lo que el servidor va a rechazar de todas formas. Para «¿esta sesión manda?» ya existe `isCoordination(user)` en `src/modules/auth/session.tsx`. Esconder no es autorizar: la decisión real es del servidor.
 
 ## 4. `app/_layout.tsx`
 
-Registrar la pantalla dentro del `Stack.Protected` que corresponda (con sesión
-o sin ella) y ponerle título:
+Registrar la pantalla dentro del `Stack.Protected` que corresponda (con sesión,
+sin ella, o solo para coordinación) y ponerle título:
 
 ```tsx
-<Stack.Screen name="xs/[id]" options={{ title: 'Detalle' }} />
+<Stack.Protected guard={isCoordination(user)}>
+  <Stack.Screen name="xs/[id]" options={{ title: 'Detalle' }} />
+</Stack.Protected>
 ```
+
+Fuera de su guarda, la ruta ni se registra: no hay forma de llegar a ella.
 
 ## 5. Verificar
 
@@ -81,3 +90,7 @@ npx tsc --noEmit     # si se queja de un href, es que faltó el paso anterior
 
 Y probar contra el backend de verdad: `npm run dev` en
 `../../sw_II/helpdesk-uam`, con su `npm run db:up` y `npm run db:seed`.
+
+Si la pantalla es de coordinación, el registro de la app no sirve para probarla
+(siempre crea SOLICITANTE): entra con la cuenta que siembra `db:seed`,
+`coordinacion@autonoma.edu.co`.

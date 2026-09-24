@@ -10,20 +10,15 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { listCategories } from '../../src/api/categories';
+import { listCategories } from '../../src/modules/categories/api';
 import { deleteTicket, getTicket, updateTicket } from '../../src/api/tickets';
 import Badge from '../../src/components/Badge';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import Select from '../../src/components/Select';
-import { useSession } from '../../src/session/context';
-import {
-  PRIORITIES,
-  STATUSES,
-  type Category,
-  type Ticket,
-  type TicketChanges,
-} from '../../src/types';
+import { isCoordination, useSession } from '../../src/modules/auth/session';
+import type { Category } from '../../src/modules/categories/types';
+import { PRIORITIES, STATUSES, type Ticket, type TicketChanges } from '../../src/types';
 
 /** Los campos editables del formulario. Coinciden con lo que acepta el PATCH. */
 type EditForm = Required<Pick<Ticket, 'subject' | 'description' | 'status' | 'priority' | 'categoryId'>>;
@@ -110,7 +105,7 @@ export default function TicketDetail() {
   }
 
   // Borrar contradice el historial inmutable (R08): es un acto administrativo.
-  const canDelete = user?.role === 'COORDINADOR' || user?.role === 'ADMINISTRADOR';
+  const canDelete = isCoordination(user);
 
   return (
     <ScrollView
