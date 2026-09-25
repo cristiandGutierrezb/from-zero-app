@@ -1,9 +1,9 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
-import Button from '../src/components/Button';
-import Field from '../src/components/Field';
-import { useSession } from '../src/modules/auth/session';
+import Button from '../../src/components/Button';
+import Field from '../../src/components/Field';
+import { useSession } from '../../src/modules/auth/session';
 
 /** Los datos que captura este formulario. */
 type LoginForm = { email: string; password: string };

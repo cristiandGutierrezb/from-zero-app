@@ -1,9 +1,9 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { ScrollView, Text } from 'react-native';
-import Button from '../src/components/Button';
-import Field from '../src/components/Field';
-import { useSession } from '../src/modules/auth/session';
+import Button from '../../src/components/Button';
+import Field from '../../src/components/Field';
+import { useSession } from '../../src/modules/auth/session';
 
 type RegisterForm = { name: string; email: string; password: string; confirmation: string };
 
