@@ -7,14 +7,14 @@ export default function Layout() {
         name="login"
         options={{
           drawerLabel: 'Login',
-          title: 'overview',
+          title: 'Iniciar sesión',
         }}
       />
       <Drawer.Screen
         name="register"
         options={{
           drawerLabel: 'Register',
-          title: 'overview',
+          title: 'Crear cuenta',
         }}
       />
     </Drawer>

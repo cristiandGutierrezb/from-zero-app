@@ -33,12 +33,13 @@ function Navigator() {
         <Stack.Screen name="tickets/new" options={{ title: 'Nueva solicitud' }} />
         {/* `[id]` es un segmento variable: una sola pantalla para todos los casos. */}
         <Stack.Screen name="tickets/[id]" options={{ title: 'Detalle del caso' }} />
+        {/* Grupos con su propio _layout: se registran por el nombre de la carpeta. */}
+        <Stack.Screen name="categories" options={{ headerShown: false }} />
       </Stack.Protected>
 
       {/* Sin sesión */}
       <Stack.Protected guard={!user}>
-        <Stack.Screen name="login" options={{ title: 'Iniciar sesión' }} />
-        <Stack.Screen name="register" options={{ title: 'Crear cuenta' }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

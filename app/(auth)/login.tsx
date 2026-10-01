@@ -1,6 +1,7 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import { useSession } from '../../src/modules/auth/session';
@@ -10,6 +11,7 @@ type LoginForm = { email: string; password: string };
 
 export default function Login() {
   const { signIn } = useSession();
+  const headerHeight = useHeaderHeight();
 
   // `control` conecta los campos, `handleSubmit` valida antes de enviar y
   // `formState` trae los errores y si se está enviando en este momento.
@@ -30,7 +32,11 @@ export default function Login() {
   };
 
   return (
-    <View className="flex-1 justify-center gap-5 bg-neutral-50 p-6">
+    // Igual que en el registro: el offset descuenta el header del Drawer.
+    <KeyboardAvoidingView
+      className="flex-1 justify-center gap-5 bg-neutral-50 p-6"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={headerHeight}>
       <View className="gap-1">
         <Text className="text-2xl font-bold text-neutral-900">Mesa de ayuda</Text>
         <Text className="text-neutral-500">Entra con tu cuenta institucional</Text>
@@ -71,6 +77,6 @@ export default function Login() {
       <Link href="/register" className="text-center text-blue-600">
         ¿No tienes cuenta? Regístrate
       </Link>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
