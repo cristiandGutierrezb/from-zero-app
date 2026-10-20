@@ -37,6 +37,9 @@ function Navigator() {
         <Stack.Screen name="categories" options={{ headerShown: false }} />
       </Stack.Protected>
 
+      {/* Con o sin sesión: fuera de toda guarda */}
+      <Stack.Screen name="galeria" options={{ title: 'Galería de estilos' }} />
+
       {/* Sin sesión */}
       <Stack.Protected guard={!user}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

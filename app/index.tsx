@@ -34,6 +34,7 @@ export default function Home() {
             secondary
           />
         )}
+        <Button text="Galería de estilos" onPress={() => router.push('/galeria')} secondary />
         <Button text="Cerrar sesión" onPress={signOut} secondary />
       </View>
     </View>
