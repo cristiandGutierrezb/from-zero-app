@@ -1,11 +1,20 @@
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import { isCoordination, useSession } from '../src/modules/auth/session';
+import { savePushToken } from '../src/modules/notifications/api';
 
 /** Pantalla de inicio: quién eres y qué puedes hacer. */
 export default function Home() {
   const { user, signOut } = useSession();
+
+  // Primero se desasocia el teléfono (aún con sesión válida), para que los
+  // avisos del caso no le lleguen a quien entre después en este dispositivo.
+  // Si falla (sin red), se cierra igual: salir no puede quedar bloqueado.
+  const logOut = async () => {
+    await savePushToken(null).catch(() => {});
+    signOut();
+  };
 
   return (
     <View className="flex-1 gap-6 bg-neutral-50 p-6">
@@ -34,9 +43,13 @@ export default function Home() {
             secondary
           />
         )}
-        <Button text="Galería de estilos" onPress={() => router.push('/galeria')} secondary />
-        <Button text="Cerrar sesión" onPress={signOut} secondary />
+        <Button text="Cerrar sesión" onPress={logOut} secondary />
       </View>
+
+      {/* Material de clase, no parte del producto: un enlace discreto al final. */}
+      <Link href="/ejemplos/estilos" className="mt-auto text-center text-xs text-neutral-400">
+        Ejemplos de clase · galería de estilos
+      </Link>
     </View>
   );
 }

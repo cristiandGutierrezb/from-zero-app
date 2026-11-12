@@ -54,10 +54,6 @@ const LoginScreen = () => {
       <Link href="/register" className="text-center text-blue-600">
         ¿No tienes cuenta? Regístrate
       </Link>
-
-      <Link href="/galeria" className="text-center text-neutral-500">
-        Ver galería de estilos
-      </Link>
     </KeyboardAvoidingView>
   );
 }

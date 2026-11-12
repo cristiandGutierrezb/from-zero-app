@@ -25,14 +25,15 @@ export function setToken(value: string | null): void {
   token = value;
 }
 
-/** Los verbos que usa la API: leer, crear, modificar y eliminar. */
-type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+/** Los verbos que usa la API: leer, crear, modificar, reemplazar y eliminar. */
+type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 /**
  * Hace una petición a la API y devuelve el JSON ya tipado.
  *
  * - Sin `body` -> GET. Con `body` -> POST enviándolo como JSON.
- * - `method` cambia ese comportamiento: PATCH para modificar, DELETE para borrar.
+ * - `method` cambia ese comportamiento: PATCH para modificar, PUT para reemplazar,
+ *   DELETE para borrar.
  * - Si hay sesión activa, adjunta la cabecera `Authorization: Bearer <token>`.
  * - Si el servidor responde con error, lanza un Error con SU mensaje, que es
  *   el que la pantalla muestra al usuario.

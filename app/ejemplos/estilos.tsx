@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
-import { BiophilicDemo } from '../src/components/estilos/biophilic';
-import { ChromeDemo } from '../src/components/estilos/chrome';
-import { ClaymorphismDemo } from '../src/components/estilos/claymorphism';
-import { LuminousEcoDemo } from '../src/components/estilos/eco';
-import { GlassmorphismDemo } from '../src/components/estilos/glassmorphism';
-import { HandDrawnDemo } from '../src/components/estilos/hand-drawn';
-import { LiquidGlassDemo } from '../src/components/estilos/liquid-glass';
-import { ManuscriptDemo } from '../src/components/estilos/manuscript';
-import { NeumorphismDemo } from '../src/components/estilos/neumorphism';
-import { ScrapbookDemo } from '../src/components/estilos/scrapbook';
-import { SkeuomorphismDemo } from '../src/components/estilos/skeuomorphism';
-import { SpatialDemo } from '../src/components/estilos/spatial';
-import { WoodDemo } from '../src/components/estilos/wood';
-import { Y2KDemo } from '../src/components/estilos/y2k';
+import { BiophilicDemo } from '../../src/ejemplos/estilos/biophilic';
+import { ChromeDemo } from '../../src/ejemplos/estilos/chrome';
+import { ClaymorphismDemo } from '../../src/ejemplos/estilos/claymorphism';
+import { LuminousEcoDemo } from '../../src/ejemplos/estilos/eco';
+import { GlassmorphismDemo } from '../../src/ejemplos/estilos/glassmorphism';
+import { HandDrawnDemo } from '../../src/ejemplos/estilos/hand-drawn';
+import { LiquidGlassDemo } from '../../src/ejemplos/estilos/liquid-glass';
+import { ManuscriptDemo } from '../../src/ejemplos/estilos/manuscript';
+import { NeumorphismDemo } from '../../src/ejemplos/estilos/neumorphism';
+import { ScrapbookDemo } from '../../src/ejemplos/estilos/scrapbook';
+import { SkeuomorphismDemo } from '../../src/ejemplos/estilos/skeuomorphism';
+import { SpatialDemo } from '../../src/ejemplos/estilos/spatial';
+import { WoodDemo } from '../../src/ejemplos/estilos/wood';
+import { Y2KDemo } from '../../src/ejemplos/estilos/y2k';
 
 /**
- * Galería de los estilos visuales vistos en clase. Cada demo vive en
- * src/components/estilos/ y es el mismo código de GUIA-DISENO-UI.md.
+ * EJEMPLO DE CLASE, no parte del producto: galería de los estilos visuales
+ * vistos en clase. Cada demo vive en src/ejemplos/estilos/ y es el mismo
+ * código de src/ejemplos/estilos/GUIA-DISENO-UI.md.
  * No necesita sesión ni backend: es solo interfaz.
  */
 const ESTILOS = [

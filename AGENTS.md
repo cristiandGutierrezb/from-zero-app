@@ -25,9 +25,11 @@ su traducción y su pantalla juntos, en vez de repartidos por tipo de archivo.
 | `src/modules/<x>/` | Un módulo: `types.ts` (su vocabulario) + `api.ts` (su traducción) | Un módulo no importa de otro; lo común baja a `src/api/` o `src/components/` |
 | `src/modules/auth/` | Roles, usuario, login/registro/perfil y el contexto de sesión | El token vive en memoria |
 | `src/modules/categories/` | El catálogo de categorías y SLA (F04) | |
+| `src/modules/notifications/` | Avisos push (F09): permiso, token del dispositivo, abrir el caso al tocar | Paso a paso en `GUIA-NOTIFICACIONES-PUSH.md` |
 | `src/api/client.ts` | El transporte compartido: **el único lugar** que sabe de `fetch`, de URLs y del token | |
 | `src/api/tickets.ts`, `src/types.ts` | Los tickets, todavía sin mudar a `src/modules/tickets/` | Al tocarlos a fondo, múdalos |
 | `src/components/` | Piezas reutilizadas: `Field`, `Select`, `Button`, `Badge` | Sin lógica de negocio |
+| `app/ejemplos/`, `src/ejemplos/` | Material de clase (galería de estilos y su guía), **no** parte del producto | Nada del producto importa de aquí |
 
 ## Las cuatro reglas
 
